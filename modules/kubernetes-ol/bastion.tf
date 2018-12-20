@@ -23,6 +23,4 @@ resource "oci_core_instance" "bastion" {
   }
 
   preserve_boot_volume = false
-
-  defined_tags = "${map("${oci_identity_tag_namespace.main.name}.${var.tag-namespace-key}", "bastion" )}"
 }

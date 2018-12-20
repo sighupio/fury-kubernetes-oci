@@ -6,7 +6,7 @@ resource "oci_core_subnet" "public" {
   security_list_ids          = ["${oci_core_security_list.public.id}"]
   route_table_id             = "${oci_core_route_table.public.id}"
   dhcp_options_id            = "${oci_core_dhcp_options.main.id}"
-  dns_label                  = "public"
+  dns_label                  = "${var.subnet-prefix-dns}public"
   prohibit_public_ip_on_vnic = "false"
 }
 

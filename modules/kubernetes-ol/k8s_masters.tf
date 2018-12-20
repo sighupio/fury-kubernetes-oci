@@ -22,6 +22,5 @@ resource "oci_core_instance" "master" {
     source_type             = "image"
     boot_volume_size_in_gbs = "100"
   }
-  defined_tags         = "${map("${oci_identity_tag_namespace.main.name}.${var.tag-namespace-key}", "master" )}"
   preserve_boot_volume = true
 }

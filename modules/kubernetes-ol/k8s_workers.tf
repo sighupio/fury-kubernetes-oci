@@ -24,7 +24,6 @@ resource "oci_core_instance" "infra" {
 
   preserve_boot_volume = true
 
-  defined_tags = "${map("${oci_identity_tag_namespace.main.name}.${var.tag-namespace-key}", "infra" )}"
 }
 
 resource "oci_core_instance" "staging" {
@@ -52,7 +51,6 @@ resource "oci_core_instance" "staging" {
   }
 
   preserve_boot_volume = true
-  defined_tags         = "${map("${oci_identity_tag_namespace.main.name}.${var.tag-namespace-key}", "staging" )}"
 }
 
 resource "oci_core_instance" "production" {
@@ -80,5 +78,4 @@ resource "oci_core_instance" "production" {
   }
 
   preserve_boot_volume = true
-  defined_tags         = "${map("${oci_identity_tag_namespace.main.name}.${var.tag-namespace-key}", "production" )}"
 }

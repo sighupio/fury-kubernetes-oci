@@ -65,12 +65,12 @@ variable "jenkins-machine-type" {
 
 variable object-storage-namespace {}
 
-resource "oci_identity_tag_namespace" "main" {
-  compartment_id = "${var.compartment-id}"
-  description    = "Namespace to separate instance roles"
-  name           = "machinekind"
-  is_retired     = false
-}
+// resource "oci_identity_tag_namespace" "main" {
+//   compartment_id = "${var.compartment-id}"
+//   description    = "Namespace to separate instance roles"
+//   name           = "machinekind"
+//   is_retired     = false
+// }
 
 variable tag-namespace-key {
   default = "type"

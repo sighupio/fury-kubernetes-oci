@@ -6,7 +6,7 @@ resource "oci_core_subnet" "dataplane" {
   security_list_ids          = ["${oci_core_security_list.dataplane.id}"]
   route_table_id             = "${oci_core_route_table.dataplane.id}"
   dhcp_options_id            = "${oci_core_dhcp_options.main.id}"
-  dns_label                  = "dataplane"
+  dns_label                  = "${var.subnet-prefix-dns}dataplane"
   prohibit_public_ip_on_vnic = "true"
 }
 

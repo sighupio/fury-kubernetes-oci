@@ -7,7 +7,7 @@ variable "subnet-name-prefix" {}
 variable "internet-gateway-id" {}
 variable "nat-gateway-id" {}
 variable "vcn-dns-label" {}
-
+variable "subnet-prefix-dns" {}
 variable "on-premise-routes" {
   type = "list"
 }

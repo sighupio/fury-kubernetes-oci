@@ -1,7 +1,7 @@
 resource "oci_identity_user" "jenkins-pusher" {
   compartment_id = "${var.tenancy_ocid}"
   description    = "This user is created and managed by Terraform"
-  name           = "jenkins-pusher-${var.name}"
+  name           = "jenkins-pusher-${var.name}-${var.env}"
 
   freeform_tags = {
     "Owner" = "Terraform"
@@ -11,7 +11,7 @@ resource "oci_identity_user" "jenkins-pusher" {
 resource "oci_identity_group" "jenkins-pusher" {
   compartment_id = "${var.tenancy_ocid}"
   description    = "This group is created and managed by Terraform"
-  name           = "jenkins-pusher-${var.name}"
+  name           = "jenkins-pusher-${var.name}-${var.env}"
 
   freeform_tags = {
     "Owner" = "Terraform"
@@ -27,7 +27,7 @@ resource "oci_identity_policy" "jenkins-pusher" {
   #Required
   compartment_id = "${var.tenancy_ocid}"
   description    = "This policy is created and managed by terraform"
-  name           = "jenkins-pusher-${var.name}"
+  name           = "jenkins-pusher-${var.name}-${var.env}"
 
   statements = [
     "Allow group ${oci_identity_group.jenkins-pusher.name} to use repos in tenancy",
