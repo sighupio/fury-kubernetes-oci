@@ -22,18 +22,18 @@
     value: '1'
     state: present
 
-- name: Adding kubernetes repository
-  yum_repository:
-    name: Kubernetes
-    description: "Kubernetes binary repository"
-    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-    enabled: yes
-    state: present
-    gpgcheck: yes
-    repo_gpgcheck: yes
-    gpgkey:
-    - 'https://packages.cloud.google.com/yum/doc/yum-key.gpg'
-    - 'https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg'
+# - name: Adding kubernetes repository
+#   yum_repository:
+#     name: Kubernetes
+#     description: "Kubernetes binary repository"
+#     baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+#     enabled: yes
+#     state: present
+#     gpgcheck: yes
+#     repo_gpgcheck: yes
+#     gpgkey:
+#     - 'https://packages.cloud.google.com/yum/doc/yum-key.gpg'
+#     - 'https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg'
     
 - name: Making sure kubelet, kubectl, kubeadm, cri-tools are installed
   yum:
@@ -41,8 +41,6 @@
       - kubelet-{{ kubelet_version }}
       - kubeadm-{{ kubeadm_version }}
       - kubectl-{{ kubectl_version }}
-      - kubernetes-cni
-      - cri-tools-{{ critools_version }}
     state: present
     update_cache: yes
 

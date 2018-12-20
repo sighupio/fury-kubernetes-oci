@@ -1,8 +1,7 @@
 ---
-kubelet_version: "1.12.6"
-kubectl_version: "1.12.6"
-kubeadm_version: "1.13.4"
-critools_version: "1.12.0"
+kubelet_version: "1.12.5-2.1.1.el7"
+kubectl_version: "1.12.5-2.1.1.el7"
+kubeadm_version: "1.12.5-2.1.1.el7"
 
 # https://github.com/oracle/terraform-kubernetes-installer/blob/master/instances/k8sworker/scripts/setup.template.sh
 docker_version: "18.03.1.ol-0.0.12.el7"

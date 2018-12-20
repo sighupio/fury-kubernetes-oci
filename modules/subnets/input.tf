@@ -11,5 +11,9 @@ variable "vcn-dns-label" {}
 variable "on-premise-routes" {
   type = "list"
 }
+
 variable "search-domain" {}
-variable "custom-dns" {}
+
+variable "custom-dns" {
+  type = "list"
+}
