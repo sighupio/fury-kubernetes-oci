@@ -1,0 +1,4 @@
+resources:
+  - deploy.yml
+  - rbac.yml
+  - sc.yml

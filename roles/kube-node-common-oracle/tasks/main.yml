@@ -1,0 +1,22 @@
+---
+
+
+- name: Stopping and disabling firewalld
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: false
+
+- name: Disabling selinux
+  selinux:
+    state: disabled
+
+- name: Flushing iptables
+  iptables:
+    flush: yes
+
+- name: Installing container runtime
+  include_tasks: "docker.yml"
+
+- name: Installing Kubelet Kubeadm Kubectl Critools
+  include_tasks: "kubelet.yml"

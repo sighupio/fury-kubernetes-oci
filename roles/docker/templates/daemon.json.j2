@@ -1,0 +1,16 @@
+{
+{% if docker_device_name is defined %}
+    "storage-driver": "devicemapper",
+    "storage-opts": [
+      "dm.directlvm_device={{ docker_device_name }}"
+    ],
+{% else %}
+  "storage-driver": "overlay2",
+{% endif %}
+    "log-driver": "json-file",
+    "live-restore": true,
+    "log-opts": {
+      "max-size": "10m",
+      "max-file": "5"
+    }
+}

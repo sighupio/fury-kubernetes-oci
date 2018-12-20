@@ -1,0 +1,1 @@
+KUBELET_EXTRA_ARGS='--cloud-provider={{ kubernetes_cloud_provider }} --provider-id={{ kubernetes_node_ocid }} --node-labels={{ group_names | map('regex_replace', '^(.*)$', 'node-kind.sighup.io/\\1=') | join(',') }}'

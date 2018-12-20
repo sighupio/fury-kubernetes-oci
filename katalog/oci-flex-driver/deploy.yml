@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: oci-flexvolume-driver
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: oci-flexvolume-driver
+  template:
+    metadata:
+      name: oci-flexvolume-driver
+      labels:
+        app: oci-flexvolume-driver
+    spec:
+      serviceAccountName: oci-flexvolume-driver
+      tolerations:
+      - key: node.cloudprovider.kubernetes.io/uninitialized
+        value: "true"
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      initContainers:
+      - image: quay.io/sighup/kubectl:v1.13.2
+        name: kubeconfig
+        command: 
+        - "/bin/sh"
+        - "/scripts/init.sh"
+        volumeMounts:
+        - name: initscript
+          mountPath: /scripts
+        - name: kubeconfig
+          mountPath: /files
+      containers:
+      - image: iad.ocir.io/oracle/oci-flexvolume-driver:0.8.1
+        imagePullPolicy: Always
+        name: oci-flexvolume-driver
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /flexmnt
+          name: flexvolume-mount
+        - mountPath: /tmp
+          name: config
+          readOnly: true
+        - mountPath: /tmp2
+          name: kubeconfig
+          readOnly: true
+      volumes:
+      - name: flexvolume-mount
+        hostPath:
+          path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
+          type: DirectoryOrCreate
+      - name: config
+        secret:
+          secretName: oci-flexvolume-driver
+      - name: kubeconfig
+        emptyDir: {}
+      - name: initscript
+        configMap:
+          name: initscript

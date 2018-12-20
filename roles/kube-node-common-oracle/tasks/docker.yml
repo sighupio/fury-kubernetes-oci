@@ -1,0 +1,34 @@
+---
+
+- name: Installing docker dependency
+  yum:
+    name:
+      - ca-certificates
+      - curl
+      - htop
+      - iotop
+      - openssl
+    state: present
+
+- name: Installing docker-ce
+  yum:
+    name: "docker-engine-{{ docker_version }}"
+    state: present
+
+- name: Making sure /etc/docker is present on machine
+  file:
+    name: /etc/docker
+    state: directory
+
+- name: Making sure docker configuration is present on machine
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    mode: 0644
+  notify: restart docker
+
+- name: starting and enabling docker
+  systemd:
+    name: docker
+    state: started
+    enabled: yes

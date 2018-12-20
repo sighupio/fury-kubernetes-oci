@@ -1,0 +1,6 @@
+---
+- name: Reload ETCD
+  systemd:
+    name: etcd
+    daemon_reload: yes
+    state: restarted
