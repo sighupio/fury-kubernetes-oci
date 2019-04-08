@@ -23,33 +23,27 @@ master
 nodes
 jenkins
 
-[production:vars]
-ansible_user=opc
-ansible_python_interpreter=python2
-
 [all:vars]
-ansible_user=ubuntu
+ansible_user=opc
 ansible_ssh_private_key_file='${var.ssh-private-key}'
-ansible_python_interpreter=python3
+ansible_python_interpreter=python2
 
 [master:vars]
 etcd_initial_cluster='${join(",", formatlist("%s=https://%s.%s.%s.oraclevcn.com:2380", oci_core_instance.master.*.hostname_label, oci_core_instance.master.*.hostname_label, var.controlplane-subnet-dns-label, var.vcn-dns-label))}'
 control_plane_endpoint=${oci_load_balancer_load_balancer.controlplane.ip_address_details.0.ip_address}
 dns_zone=${var.controlplane-subnet-dns-label}.${var.vcn-dns-label}.oraclevcn.com
+
+[gated:vars]
+ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -W %h:%p -q -i ${var.ssh-private-key} opc@${oci_core_instance.bastion.*.public_ip[0]}"'
 EOF
-
-  // [gated:vars]
-  // ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -W %h:%p -q -i ${var.ssh-private-key} ubuntu@${oci_core_instance.bastion.*.public_ip[0]}"'
-
-
-  // public_lb_address=${oci_load_balancer_load_balancer.public.ip_address_details.0.ip_address}
+# public_lb_address=${oci_load_balancer_load_balancer.public.ip_address_details.0.ip_address}
 
   oci-flex-driver = <<EOF
 apiVersion: v1
 data:
   init.sh: |-
     #!/bin/sh
-    
+
     kubectl config --kubeconfig=/files/kubeconfig set-cluster oci-cluster --server=https://${oci_load_balancer_load_balancer.controlplane.ip_address_details.0.ip_address}:6443 --certificate-authority=/run/secrets/kubernetes.io/serviceaccount/ca.crt --embed-certs=true
     kubectl config --kubeconfig=/files/kubeconfig set-credentials oci-user --token=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
     kubectl config --kubeconfig=/files/kubeconfig set-context oci-flex --user=oci-user --cluster=oci-cluster
