@@ -1,4 +1,4 @@
-apiVersion: kubeadm.k8s.io/v1beta1
+apiVersion: kubeadm.k8s.io/v1alpha3
 kind: InitConfiguration
 nodeRegistration:
   name: {{ kubernetes_hostname }}
@@ -9,7 +9,7 @@ localAPIEndpoint:
   advertiseAddress: {{ ansible_default_ipv4.address }}
   bindPort: 6443
 ---
-apiVersion: kubeadm.k8s.io/v1beta1
+apiVersion: kubeadm.k8s.io/v1alpha3
 kind: ClusterConfiguration
 etcd:
   external:
@@ -63,11 +63,11 @@ controllerManager:
 networking:
   podSubnet: {{ kubernetes_pod_cidr }}
   serviceSubnet: {{ kubernetes_svc_cidr }}
-  dnsDomain: "cluster.local"
+  dnsDomain: {{ kubernetes_cluster_dns_domain }}
 ---
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
 bindAddress: 0.0.0.0
 clusterCIDR: "{{ kubernetes_pod_cidr }}"
-metricsBindAddress: 127.0.0.1:10249
+metricsBindAddress: 0.0.0.0:10249
 mode: iptables

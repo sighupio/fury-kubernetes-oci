@@ -7,6 +7,7 @@ audit_policy_config_path: /etc/kubernetes/audit.yaml
 ## MasterConfig paramethers
 kubernetes_pod_cidr: "10.32.0.0/16"
 kubernetes_svc_cidr: "10.96.0.0/16"
+kubernetes_cluster_dns_domain: "cluster.local"
 kubernetes_cluster_name: "sighup-prod"
 kubernetes_cloud_provider: "external"
 kubernetes_api_SAN:
