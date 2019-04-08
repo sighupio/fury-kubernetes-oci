@@ -3,7 +3,7 @@
 - name: Installing furyagent
   get_url:
     url: "{{ furyagent_uri }}"
-    dest: /usr/local/bin/furyagent
+    dest: /usr/local/sbin/furyagent
     mode: 0750
     force: yes
 
@@ -33,15 +33,15 @@
     mode: 0640
 
 - name: Configuring Master node with furyagent
-  command: "furyagent configure master --config={{ furyagent_config_dir }}/{{ furyagent_config_name }} --overwrite=true"
+  command: "/usr/local/sbin/furyagent configure master --config={{ furyagent_config_dir }}/{{ furyagent_config_name }} --overwrite=true"
   when: furyagent_configure_master
 
 - name: Configuring Etcd node with furyagent
-  command: "furyagent configure etcd --config={{ furyagent_config_dir }}/{{ furyagent_config_name }} --overwrite=true"
+  command: "/usr/local/sbin/furyagent configure etcd --config={{ furyagent_config_dir }}/{{ furyagent_config_name }} --overwrite=true"
   when: furyagent_configure_etcd
 
 - name: Configuring OpenVPN node with furyagent
-  command: "furyagent configure openvpn --config={{ furyagent_config_dir }}/{{ furyagent_config_name }} --overwrite=true"
+  command: "/usr/local/sbin/furyagent configure openvpn --config={{ furyagent_config_dir }}/{{ furyagent_config_name }} --overwrite=true"
   when: furyagent_configure_openvpn
 
 - name: Configure Etcd backup every 15 minutes with furyagent
@@ -49,5 +49,5 @@
     minute: "*/10"
     state: present
     name: etcd-backup-furyagent
-    job: "/usr/local/bin/furyagent backup etcd --config={{ furyagent_config_dir }}/{{ furyagent_config_name }} > /var/log/furyagent.log"
+    job: "/usr/local/sbin/furyagent backup etcd --config={{ furyagent_config_dir }}/{{ furyagent_config_name }} > /var/log/furyagent.log"
   when: furyagent_etcd_backup
