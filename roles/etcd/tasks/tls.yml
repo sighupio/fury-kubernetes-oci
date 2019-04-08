@@ -6,7 +6,7 @@
     dest: /etc/etcd/kubeadm-etcd.yml
 
 - name: Generating etcd certificates (server, peer, client)
-  shell: "kubeadm init phase certs {{ item }} --config=/etc/etcd/kubeadm-etcd.yml"
+  shell: "kubeadm alpha phase certs {{ item }} --config=/etc/etcd/kubeadm-etcd.yml"
   with_items:
     - etcd-healthcheck-client
     - etcd-peer
