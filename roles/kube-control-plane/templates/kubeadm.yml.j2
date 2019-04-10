@@ -1,11 +1,6 @@
 apiVersion: kubeadm.k8s.io/v1alpha3
 kind: InitConfiguration
-nodeRegistration:
-  name: {{ kubernetes_hostname }}
-  taints:
-  - effect: NoSchedule
-    key: node-role.kubernetes.io/master
-localAPIEndpoint:
+apiEndpoint:
   advertiseAddress: {{ ansible_default_ipv4.address }}
   bindPort: 6443
 ---
@@ -13,61 +8,50 @@ apiVersion: kubeadm.k8s.io/v1alpha3
 kind: ClusterConfiguration
 etcd:
   external:
-    endpoints: 
+    endpoints:
 {{ etcd.endpoints | to_nice_yaml | indent(4, true) }}
     caFile: {{ etcd.caFile }}
     certFile: {{ etcd.certFile }}
     keyFile: {{ etcd.keyFile }}
+cloudProvider: {{ kubernetes_cloud_provider }}
 clusterName: {{ kubernetes_cluster_name }}
 kubernetesVersion: {{ kubernetes_version }}
-imageRepository: "k8s.gcr.io"
-useHyperKubeImage: false
+auditPolicy:
+  path: {{ audit_policy_config_path }}
+  logDir: {{ audit_log_dir }}
+  logMaxAge: {{ audit_policy_max_age }}
 controlPlaneEndpoint: {{ kubernetes_control_plane_address }}
-DNS:
-  type: "CoreDNS"
-apiServer:
-  extraArgs:
-    enable-admission-plugins: "NamespaceLifecycle,LimitRanger,PodNodeSelector,Initializers,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota"
-    runtime-config: "admissionregistration.k8s.io/v1alpha1"
-    cloud-provider: external
-    audit-log-maxage: "{{ audit_policy_max_age }}"
-    audit-log-path: "{{ audit_log_dir }}/kube-apiserver-audit.log"
-    audit-policy-file: {{ audit_policy_config_path }}
-    audit-log-maxsize: "50"
-    audit-log-maxbackup: "20"
+nodeRegistration:
+  name: {{ kubernetes_hostname }}
+apiServerExtraArgs:
+  audit-log-path: "/var/log/kubernetes/audit/kube-apiserver-audit.log"
+  enable-admission-plugins: "NamespaceLifecycle,LimitRanger,PodNodeSelector,Initializers,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota"
+  runtime-config: "admissionregistration.k8s.io/v1alpha1"
+  cloud-provider: {{ kubernetes_cloud_provider }}
 {% if oidc_isssuer_url != "" %}
-    oidc-issuer-url: {{ oidc_isssuer_url}}
-    oidc-client-id: {{ oidc_client_id }}
-    oidc-username-claim: "{{ oidc_username_claim }}"
-    oidc-groups-claim: "{{ oidc_groups_claim }}"
-    oidc-groups-prefix: "{{ oidc_group_prefix }}"
+  oidc-issuer-url: {{ oidc_isssuer_url}}
+  oidc-client-id: {{ oidc_client_id }}
+  oidc-username-claim: "{{ oidc_username_claim }}"
+  oidc-groups-claim: "{{ oidc_groups_claim }}"
+  oidc-groups-prefix: "{{ oidc_group_prefix }}"
 {% endif %}
-  extraVolumes:
-  - name: audit-files
-    hostPath: {{ audit_log_dir }}
-    mountPath: {{ audit_log_dir }}
-    readonly: false
-    pathType: Directory
-  - name: audit-policy
-    hostPath: {{ audit_policy_config_path }}
-    mountPath: {{ audit_policy_config_path }}
-    readonly: true
-    pathType: File
-scheduler:
-  extraArgs:
-    address: {{ ansible_default_ipv4.address }}
-controllerManager:
-  extraArgs:
-    address: {{ ansible_default_ipv4.address }}
-    cloud-provider: external
+schedulerExtraArgs:
+  address: {{ ansible_default_ipv4.address }}
+controllerManagerExtraArgs:
+  address: {{ ansible_default_ipv4.address }}
+  cloud-provider: {{ kubernetes_cloud_provider }}
+  configure-cloud-routes: "false"
+featureGates:
+  CoreDNS: true
+  DynamicKubeletConfig: false
+  Auditing: true
+  SelfHosting: false
+  StoreCertsInSecrets: false
 networking:
   podSubnet: {{ kubernetes_pod_cidr }}
   serviceSubnet: {{ kubernetes_svc_cidr }}
-  dnsDomain: {{ kubernetes_cluster_dns_domain }}
----
-apiVersion: kubeproxy.config.k8s.io/v1alpha1
-kind: KubeProxyConfiguration
-bindAddress: 0.0.0.0
-clusterCIDR: "{{ kubernetes_pod_cidr }}"
-metricsBindAddress: 0.0.0.0:10249
-mode: iptables
+  dnsDomain: "cluster.local"
+kubeProxy:
+  config:
+    clusterCIDR: {{ kubernetes_pod_cidr }}
+    mode: iptables
